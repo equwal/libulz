@@ -39,6 +39,23 @@ all: $(ALL_LIBS)
 
 install: $(ALL_LIBS:lib/%=$(DESTDIR)$(libdir)/%) $(ALL_INCLUDES:include/%=$(DESTDIR)$(includedir)/ulz/%) $(ALL_TOOLS:tools/%=$(DESTDIR)$(bindir)/%)
 
+uninstall:
+	@echo "Removing library files..."
+	for lib in $(ALL_LIBS:lib/%=%); do \
+		rm -f "$(DESTDIR)$(libdir)/$$lib"; \
+	done
+	@echo "Removing header files..."
+	for header in $(ALL_INCLUDES:include/%=%); do \
+		rm -f "$(DESTDIR)$(includedir)/ulz/$$header"; \
+	done
+	@echo "Removing tools..."
+	for tool in $(ALL_TOOLS:tools/%=%); do \
+		rm -f "$(DESTDIR)$(bindir)/$$tool"; \
+	done
+	@echo "Removing empty directories..."
+	-rmdir "$(DESTDIR)$(includedir)/ulz" 2>/dev/null || true
+	@echo "Uninstall complete."
+
 clean:
 	rm -f crt/*.o
 	rm -f $(OBJS)
@@ -65,4 +82,4 @@ $(DESTDIR)$(bindir)/%: tools/%
 $(DESTDIR)$(prefix)/%: %
 	install -D -m 644 $< $@
 
-.PHONY: all clean install
+.PHONY: all clean install uninstall
